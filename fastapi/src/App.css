@@ -3,6 +3,10 @@
   flex-direction:column;
 }
 
+h1 {
+  color: aliceblue;
+}
+
 #check {
   margin-right: 10px;
   height: 15px;

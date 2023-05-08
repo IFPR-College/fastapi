@@ -24,6 +24,7 @@ function App() {
     const data = {
       taskName: nameTask,
       taskDate: dateTask,
+      completed: false
     };
     try {
       if (nameTask !== "" && dateTask !== "") {
