@@ -6,6 +6,7 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [nameTask, setNameTask] = useState("");
   const [dateTask, setDateTask] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     getList();
@@ -18,35 +19,60 @@ function App() {
   }
 
   async function sendData(event) {
+    setErrorMessage("");
     event.preventDefault();
     const data = {
       taskName: nameTask,
       taskDate: dateTask,
     };
     try {
-      await axios.post("http://127.0.0.1:8000/task", data).then((response) => {
-        getList();
-        setDateTask("");
-        setNameTask("");
-      });
+      if (nameTask !== "" && dateTask !== "") {
+        await axios
+          .post("http://127.0.0.1:8000/task", data)
+          .then((response) => {
+            getList();
+            setDateTask("");
+            setNameTask("");
+          });
+      } else {
+        setErrorMessage("Ops! ocorreu um erro");
+      }
     } catch (error) {
       console.log(error);
     }
   }
 
+  function handleTaskComplete(index) {
+    const newTasks = [...tasks];
+    newTasks[index].completed = !newTasks[index].completed;
+    setTasks(newTasks);
+  }
+
+  function renderList() {
+    return tasks.map((item, index) => (
+      <li key={`li-${index}`}>
+        <input
+          type="checkbox"
+          id="check"
+          checked={item.completed ? true : false}
+          onClick={() => handleTaskComplete(index)}
+        />
+        <span
+          style={{
+            textDecoration: item.completed ? "line-through" : "none"
+          }}
+        >
+          {item.taskName} - {item.taskDate}
+        </span>
+      </li>
+    ));
+  }
+
   return (
-    <div>
+    <div id="container">
+      <div id="content">
       <h1>Lista de Tarefas</h1>
-      <ul>
-        {tasks.map((item, index) => (
-          <ul key={`ul-${item}-${index}`}>
-            <input type="checkbox" />
-            <li key={`task-${index}`}>
-              {item.taskName} - {item.taskDate}
-            </li>
-          </ul>
-        ))}
-      </ul>
+      <ul>{renderList()}</ul>
       <form id="form">
         <label htmlFor="task">Nova Tarefa:</label>
         <input
@@ -66,7 +92,10 @@ function App() {
         <button type="submit" onClick={sendData}>
           Adicionar
         </button>
+        <p>{errorMessage}</p>
       </form>
+      </div>
+      
     </div>
   );
 }

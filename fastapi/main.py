@@ -13,6 +13,7 @@ origins = ["*"]
 class Task(BaseModel):
     taskName:str
     taskDate:str
+    completed: bool
 
 class TaskList(BaseModel):
     tasks:List[Task]
@@ -37,3 +38,4 @@ async def create_task(request: Request):
     req = await request.json()
     print(req)
     tasks.append(req)
+    return tasks
